@@ -2,12 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>WPS Staff Portal | Winchester Public School</title>
     
     <!-- Favicon and Apple Home Screen Icon -->
     <link rel="icon" type="image/png" href="WPS Logo RBG.png">
     <link rel="apple-touch-icon" href="WPS Logo RBG.png">
+    
+    <!-- PWA / Mobile Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WPS Staff">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -23,6 +28,11 @@
         body {
             background-color: #f8f9fa;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            /* Support for iPhone Safe Areas */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         .knight-gradient {
@@ -32,12 +42,20 @@
         .app-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-bottom: 4px solid transparent;
+            -webkit-tap-highlight-color: transparent; /* Remove grey flash on touch */
         }
 
-        .app-card:hover {
-            transform: translateY(-8px);
-            border-bottom-color: var(--wps-blue);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        .app-card:active {
+            transform: scale(0.98);
+            background-color: #f1f5f9;
+        }
+
+        @media (min-width: 1024px) {
+            .app-card:hover {
+                transform: translateY(-8px);
+                border-bottom-color: var(--wps-blue);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
         }
 
         /* Custom scrollbar */
@@ -51,52 +69,56 @@
             background: var(--wps-gray);
             border-radius: 10px;
         }
+
+        /* Smooth scrolling for anchor links */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 antialiased">
 
     <!-- Header / Nav -->
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-3">
-                    <img src="WPS Logo RBG.png" alt="WPS Logo" class="h-10 w-auto">
-                    <span class="font-bold text-xl tracking-tight text-slate-900 ml-1">Winchester <span class="text-blue-600">P.S.</span> Staff</span>
-                </div>
-                
-                <!-- Navigation Right Side (User Profile Removed) -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <img src="WPS Logo RBG.png" alt="WPS Logo" class="h-8 sm:h-10 w-auto">
+                    <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-900 ml-1">
+                        Winchester <span class="text-blue-600">P.S.</span> Staff
+                    </span>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="knight-gradient text-white py-16 px-4 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-        <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-            <div class="md:w-2/3 text-center md:text-left">
-                <div class="inline-block px-4 py-1.5 mb-6 text-sm font-semibold tracking-wide uppercase bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-200">
+    <header class="knight-gradient text-white py-12 sm:py-16 px-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
+        <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+            <div class="w-full md:w-2/3 text-center md:text-left">
+                <div class="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-wide uppercase bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-200">
                     Staff Resource Hub
                 </div>
-                <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+                <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 sm:mb-6 leading-tight">
                     Welcome back, <br/><span class="text-blue-400">Winchester Knights.</span>
                 </h1>
-                <p class="text-lg text-slate-300 mb-8 max-w-xl mx-auto md:mx-0">
-                    Access all your essential school applications and internal tools from one secure location.
+                <p class="text-base sm:text-lg text-slate-300 mb-8 max-w-xl mx-auto md:mx-0 px-4 md:px-0">
+                    Access all essential applications and internal tools from one secure location.
                 </p>
-                <div class="flex flex-wrap justify-center md:justify-start gap-4">
-                    <a href="#apps" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/40 inline-block text-center">
+                <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4 px-8 sm:px-0">
+                    <a href="#apps" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/40 inline-block text-center text-lg">
                         Launch Apps
                     </a>
                 </div>
             </div>
             
-            <div class="md:w-1/3 flex justify-center">
+            <!-- Hidden on very small mobile screens to keep layout clean, shown on tablets up -->
+            <div class="hidden sm:flex md:w-1/3 justify-center">
                 <div class="relative group">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-amber-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                    <div class="relative bg-slate-900 p-6 rounded-3xl border border-white/10 shadow-2xl">
-                        <img src="WPS Logo RBG.png" alt="Winchester Knights Logo" class="w-48 h-auto drop-shadow-2xl">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-amber-500 rounded-full blur opacity-25"></div>
+                    <div class="relative bg-slate-900 p-4 sm:p-6 rounded-3xl border border-white/10 shadow-2xl">
+                        <img src="WPS Logo RBG.png" alt="Winchester Knights Logo" class="w-32 sm:w-48 h-auto drop-shadow-2xl">
                     </div>
                 </div>
             </div>
@@ -104,66 +126,74 @@
     </header>
 
     <!-- Main Content: Apps Grid -->
-    <main id="apps" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="flex justify-between items-end mb-10">
-            <div>
-                <h2 class="text-3xl font-bold text-slate-900 mb-2">Internal Applications</h2>
-                <p class="text-slate-500">Your essential tools for daily school operations.</p>
-            </div>
+    <main id="apps" class="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div class="mb-10 text-center sm:text-left">
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Internal Applications</h2>
+            <p class="text-slate-500 text-sm sm:text-base">Your essential tools for daily school operations.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             
             <!-- App 1: Timetables -->
             <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
-                <div class="w-24 h-24 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="Knight Class Lists.png" alt="Timetables Icon" class="w-20 h-20 object-contain">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                    <img src="Knight Class Lists.png" alt="Timetables Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
                 </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-2">Timetables</h3>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Timetables</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">View Teacher Timetables and the Prep schedule</p>
-                <a href="http://timetables.winchesterps.ca/" class="w-full py-2 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 font-semibold rounded-lg transition-colors text-center">Open App</a>
+                <a href="http://timetables.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-blue-600 active:bg-blue-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
             </div>
 
             <!-- App 2: CB Scanner -->
             <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
-                <div class="w-24 h-24 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="ScannerAppLogo.png" alt="CB Scanner Icon" class="w-20 h-20 object-contain">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                    <img src="ScannerAppLogo.png" alt="CB Scanner Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
                 </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-2">CB Scanner</h3>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">CB Scanner</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">Chromebook inventory management and rapid check-out tool.</p>
-                <a href="https://cbscanner.winchesterps.ca/" class="w-full py-2 bg-slate-100 hover:bg-amber-600 hover:text-white text-slate-700 font-semibold rounded-lg transition-colors text-center">Open App</a>
+                <a href="https://cbscanner.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-amber-600 active:bg-amber-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
             </div>
 
             <!-- App 3: Prep Payback -->
             <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
-                <div class="w-24 h-24 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="Prep Payback.png" alt="Prep Payback Icon" class="w-20 h-20 object-contain">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                    <img src="Prep Payback.png" alt="Prep Payback Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
                 </div>
-                <h3 class="text-xl font-bold text-slate-900 mb-2">Prep Payback</h3>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Prep Payback</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">Track and manage preparation time owed and repayment status.</p>
-                <a href="https://preppayback.winchesterps.ca/" class="w-full py-2 bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 font-semibold rounded-lg transition-colors text-center">Open App</a>
+                <a href="https://preppayback.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-emerald-600 active:bg-emerald-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
+            </div>
+
+            <!-- App 4: Duty Schedule -->
+            <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-rose-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                    <img src="DutyLogo.png" alt="Duty Schedule Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                </div>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Duty Schedule</h3>
+                <p class="text-slate-500 text-sm mb-6 flex-grow">Access and check the weekly staff duty rotations and locations.</p>
+                <a href="http://duty.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-rose-600 active:bg-rose-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
             </div>
 
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-12 px-4 border-t border-slate-800">
+    <footer class="bg-slate-900 text-slate-400 py-10 px-6 border-t border-slate-800">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <div class="flex items-center gap-3">
-                <img src="WPS Logo RBG.png" alt="WPS Logo" class="h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+                <img src="WPS Logo RBG.png" alt="WPS Logo" class="h-8 sm:h-10 w-auto opacity-80">
                 <div class="text-left">
-                    <div class="text-white font-bold">Winchester Public School</div>
+                    <div class="text-white font-bold text-sm sm:text-base">Winchester Public School</div>
                     <div class="text-xs">Knight Pride | Community Excellence</div>
                 </div>
             </div>
-            <div class="text-sm">
-                &copy; 2024 Winchester P.S. Staff Portal. All rights reserved.
+            <div class="text-xs sm:text-sm text-center">
+                &copy; 2024 Winchester P.S. Staff Portal.
             </div>
-            <div class="flex gap-6 text-xl">
-                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="hover:text-white transition-colors"><i class="fas fa-globe"></i></a>
+            <div class="flex gap-8 text-2xl">
+                <a href="#" class="hover:text-white transition-colors p-2"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-white transition-colors p-2"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-white transition-colors p-2"><i class="fas fa-globe"></i></a>
             </div>
         </div>
     </footer>
