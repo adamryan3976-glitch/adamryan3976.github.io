@@ -38,14 +38,20 @@
             background: linear-gradient(135deg, #1a1c2c 0%, #4a4e69 100%);
         }
 
+        /* App Card is now the link itself */
         .app-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-bottom: 4px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
             -webkit-tap-highlight-color: transparent;
         }
 
         .app-card:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
             background-color: #f1f5f9;
         }
 
@@ -55,6 +61,16 @@
                 border-bottom-color: var(--wps-blue);
                 box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             }
+            /* Visual feedback for the pseudo-button inside on hover */
+            .app-card:hover .fake-button {
+                background-color: var(--wps-blue);
+                color: white;
+            }
+            .app-card.duty-card:hover .fake-button { background-color: #e11d48; }
+            .app-card.lists-card:hover .fake-button { background-color: #4f46e5; }
+            .app-card.time-card:hover .fake-button { background-color: #2563eb; }
+            .app-card.scan-card:hover .fake-button { background-color: #d97706; }
+            .app-card.prep-card:hover .fake-button { background-color: #059669; }
         }
 
         .live-indicator {
@@ -140,55 +156,56 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8">
+            
             <!-- App 0: Class Lists -->
-            <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
+            <a href="https://class-lists.winchesterps.ca/" class="app-card lists-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
                     <img src="Knight Class Lists.png" alt="Class Lists Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Class Lists</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">Access current student groupings and classroom assignments.</p>
-                <a href="https://class-lists.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-indigo-600 active:bg-indigo-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
-            </div>
+                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+            </a>
 
-            <!-- App 1: Timetables (Icon Updated) -->
-            <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
+            <!-- App 1: Timetables -->
+            <a href="http://timetables.winchesterps.ca/" class="app-card time-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
                     <img src="Knight Timetables.png" alt="Timetables Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Timetables</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">View Teacher Timetables and the Prep schedule</p>
-                <a href="http://timetables.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-blue-600 active:bg-blue-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
-            </div>
+                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+            </a>
 
             <!-- App 2: CB Scanner -->
-            <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
+            <a href="https://cbscanner.winchesterps.ca/" class="app-card scan-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
                     <img src="ScannerAppLogo.png" alt="CB Scanner Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">CB Scanner</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">Chromebook inventory management and rapid check-out tool.</p>
-                <a href="https://cbscanner.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-amber-600 active:bg-amber-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
-            </div>
+                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+            </a>
 
             <!-- App 3: Prep Payback -->
-            <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
+            <a href="https://preppayback.winchesterps.ca/" class="app-card prep-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
                     <img src="Prep Payback.png" alt="Prep Payback Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Prep Payback</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">Track and manage preparation time owed and repayment status.</p>
-                <a href="https://preppayback.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-emerald-600 active:bg-emerald-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
-            </div>
+                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+            </a>
 
             <!-- App 4: Duty Schedule -->
-            <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
+            <a id="duty-link-container" href="http://duty.winchesterps.ca/" class="app-card duty-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 bg-rose-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
                     <img src="DutyLogo.png" alt="Duty Schedule Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Duty Schedule</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">Access and check the weekly staff duty rotations and locations.</p>
-                <a id="duty-link" href="http://duty.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-rose-600 active:bg-rose-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
-            </div>
+                <div id="duty-label" class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+            </a>
         </div>
     </main>
 
@@ -214,9 +231,6 @@
     </footer>
 
     <script>
-        /**
-         * Updated Google Apps Script Web App URL
-         */
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzGgmaua3PK6IXiljngAxcuQP0FoRxtLQ9ec6MQOSRpmFlGfIkUc_64jM_eI-G-0Wzj/exec';
 
         async function fetchLiveStatus() {
@@ -247,10 +261,14 @@
             document.getElementById('mobile-live-cycle').textContent = `Day ${cycle}`;
             document.getElementById('cycle-display').classList.remove('hidden');
 
-            const dutyLink = document.getElementById('duty-link');
+            const dutyLinkContainer = document.getElementById('duty-link-container');
+            const dutyLabel = document.getElementById('duty-label');
+            
             if (cycle && !isNaN(cycle)) {
-                dutyLink.href = `http://duty.winchesterps.ca/?day=${cycle}`;
-                dutyLink.innerHTML = `Open Day ${cycle} Schedule`;
+                // Update the entire card link
+                dutyLinkContainer.href = `http://duty.winchesterps.ca/?day=${cycle}`;
+                // Update the visual button text
+                dutyLabel.textContent = `Open Day ${cycle} Schedule`;
             }
         }
 
