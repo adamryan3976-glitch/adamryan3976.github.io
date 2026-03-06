@@ -28,7 +28,6 @@
         body {
             background-color: #f8f9fa;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            /* Support for iPhone Safe Areas */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
@@ -42,7 +41,7 @@
         .app-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-bottom: 4px solid transparent;
-            -webkit-tap-highlight-color: transparent; /* Remove grey flash on touch */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .app-card:active {
@@ -58,19 +57,15 @@
             }
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--wps-gray);
-            border-radius: 10px;
+        .live-indicator {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
-        /* Smooth scrolling for anchor links */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         html {
             scroll-behavior: smooth;
         }
@@ -88,6 +83,14 @@
                         Winchester <span class="text-blue-600">P.S.</span> Staff
                     </span>
                 </div>
+
+                <!-- Desktop Live Display -->
+                <div id="cycle-display" class="hidden sm:flex items-center gap-3 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-200">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 live-indicator"></div>
+                    <span id="live-date" class="text-xs font-medium text-slate-600">Loading Date...</span>
+                    <span class="text-slate-300">|</span>
+                    <span id="live-cycle" class="text-xs font-bold text-blue-600 uppercase tracking-wider">Day ?</span>
+                </div>
             </div>
         </div>
     </nav>
@@ -103,6 +106,16 @@
                 <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 sm:mb-6 leading-tight">
                     Welcome back, <br/><span class="text-blue-400">Winchester Knights.</span>
                 </h1>
+
+                <!-- Mobile Live Display -->
+                <div class="sm:hidden mb-6 flex justify-center">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-xl inline-flex items-center gap-3">
+                         <span id="mobile-live-date" class="text-sm font-medium text-blue-50">Loading...</span>
+                         <span class="text-white/30">|</span>
+                         <span id="mobile-live-cycle" class="text-sm font-bold text-blue-300 uppercase">Day ?</span>
+                    </div>
+                 </div>
+
                 <p class="text-base sm:text-lg text-slate-300 mb-8 max-w-xl mx-auto md:mx-0 px-4 md:px-0">
                     Access all essential applications and internal tools from one secure location.
                 </p>
@@ -113,7 +126,6 @@
                 </div>
             </div>
             
-            <!-- Hidden on very small mobile screens to keep layout clean, shown on tablets up -->
             <div class="hidden sm:flex md:w-1/3 justify-center">
                 <div class="relative group">
                     <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-amber-500 rounded-full blur opacity-25"></div>
@@ -133,7 +145,6 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            
             <!-- App 1: Timetables -->
             <div class="app-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
@@ -171,9 +182,8 @@
                 </div>
                 <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Duty Schedule</h3>
                 <p class="text-slate-500 text-sm mb-6 flex-grow">Access and check the weekly staff duty rotations and locations.</p>
-                <a href="http://duty.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-rose-600 active:bg-rose-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
+                <a id="duty-link" href="http://duty.winchesterps.ca/" class="w-full py-3 bg-slate-100 hover:bg-rose-600 active:bg-rose-700 hover:text-white text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</a>
             </div>
-
         </div>
     </main>
 
@@ -198,5 +208,57 @@
         </div>
     </footer>
 
+    <script>
+        /**
+         * Updated Google Apps Script Web App URL
+         */
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzGgmaua3PK6IXiljngAxcuQP0FoRxtLQ9ec6MQOSRpmFlGfIkUc_64jM_eI-G-0Wzj/exec';
+
+        async function fetchLiveStatus() {
+            if (!WEB_APP_URL || WEB_APP_URL.includes('PASTE_YOUR')) return;
+
+            try {
+                const response = await fetch(WEB_APP_URL);
+                const data = await response.json();
+                
+                // Format the date string nicely
+                const dateObj = new Date(data.date);
+                const formattedDate = isNaN(dateObj.getTime()) ? data.date : dateObj.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+
+                updateUI(formattedDate, data.cycleDay);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                // Fallback to local date if fetch fails
+                updateUI(new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), 'Offline');
+            }
+        }
+
+        function updateUI(dateStr, cycle) {
+            // Desktop Header
+            document.getElementById('live-date').textContent = dateStr;
+            document.getElementById('live-cycle').textContent = `Day ${cycle}`;
+            
+            // Mobile Hero
+            document.getElementById('mobile-live-date').textContent = dateStr;
+            document.getElementById('mobile-live-cycle').textContent = `Day ${cycle}`;
+
+            // Show hidden elements
+            document.getElementById('cycle-display').classList.remove('hidden');
+
+            // Optionally auto-navigate Duty Link to the current day
+            const dutyLink = document.getElementById('duty-link');
+            if (cycle && !isNaN(cycle)) {
+                dutyLink.href = `http://duty.winchesterps.ca/?day=${cycle}`;
+                dutyLink.innerHTML = `Open Day ${cycle} Schedule`;
+            }
+        }
+
+        // Run on load
+        window.onload = fetchLiveStatus;
+    </script>
 </body>
 </html>
