@@ -116,14 +116,9 @@
                     </div>
                  </div>
 
-                <p class="text-base sm:text-lg text-slate-300 mb-8 max-w-xl mx-auto md:mx-0 px-4 md:px-0">
+                <p class="text-base sm:text-lg text-slate-300 max-w-xl mx-auto md:mx-0 px-4 md:px-0">
                     Access all essential applications and internal tools from one secure location.
                 </p>
-                <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4 px-8 sm:px-0">
-                    <a href="#apps" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/40 inline-block text-center text-lg">
-                        Launch Apps
-                    </a>
-                </div>
             </div>
             
             <div class="hidden sm:flex md:w-1/3 justify-center">
@@ -221,7 +216,6 @@
                 const response = await fetch(WEB_APP_URL);
                 const data = await response.json();
                 
-                // Format the date string nicely
                 const dateObj = new Date(data.date);
                 const formattedDate = isNaN(dateObj.getTime()) ? data.date : dateObj.toLocaleDateString('en-US', { 
                     weekday: 'short', 
@@ -232,24 +226,17 @@
                 updateUI(formattedDate, data.cycleDay);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                // Fallback to local date if fetch fails
                 updateUI(new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), 'Offline');
             }
         }
 
         function updateUI(dateStr, cycle) {
-            // Desktop Header
             document.getElementById('live-date').textContent = dateStr;
             document.getElementById('live-cycle').textContent = `Day ${cycle}`;
-            
-            // Mobile Hero
             document.getElementById('mobile-live-date').textContent = dateStr;
             document.getElementById('mobile-live-cycle').textContent = `Day ${cycle}`;
-
-            // Show hidden elements
             document.getElementById('cycle-display').classList.remove('hidden');
 
-            // Optionally auto-navigate Duty Link to the current day
             const dutyLink = document.getElementById('duty-link');
             if (cycle && !isNaN(cycle)) {
                 dutyLink.href = `http://duty.winchesterps.ca/?day=${cycle}`;
@@ -257,7 +244,6 @@
             }
         }
 
-        // Run on load
         window.onload = fetchLiveStatus;
     </script>
 </body>
