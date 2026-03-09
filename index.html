@@ -71,6 +71,7 @@
             .app-card.time-card:hover .fake-button { background-color: #2563eb; }
             .app-card.scan-card:hover .fake-button { background-color: #d97706; }
             .app-card.prep-card:hover .fake-button { background-color: #059669; }
+            .app-card.wheel-card:hover .fake-button { background-color: #7c3aed; }
         }
 
         .live-indicator {
@@ -155,7 +156,7 @@
             <p class="text-slate-500 text-sm sm:text-base">Your essential tools for daily school operations.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 sm:gap-8">
             
             <!-- App 0: Class Lists -->
             <a href="https://class-lists.winchesterps.ca/" class="app-card lists-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -197,7 +198,17 @@
                 <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
             </a>
 
-            <!-- App 4: Duty Schedule -->
+            <!-- App 4: Wheel of Students -->
+            <a href="http://random-name.winchesterps.ca/" class="app-card wheel-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                    <img src="Knight Wheel.png" alt="Wheel of Students Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                </div>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Student Wheel</h3>
+                <p class="text-slate-500 text-sm mb-6 flex-grow">Randomly select students for participation or prizes.</p>
+                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+            </a>
+
+            <!-- App 5: Duty Schedule -->
             <a id="duty-link-container" href="http://duty.winchesterps.ca/" class="app-card duty-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 bg-rose-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
                     <img src="DutyLogo.png" alt="Duty Schedule Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
