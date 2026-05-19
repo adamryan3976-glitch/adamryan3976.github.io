@@ -86,169 +86,365 @@
         html {
             scroll-behavior: smooth;
         }
+
+        /* Prevent scrolling when blocked */
+        body.blocked-scroll {
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Access verification modal animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased">
+<body class="text-slate-800 antialiased blocked-scroll">
 
-    <!-- Header / Nav -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <img src="WPS Logo RBG.png" alt="WPS Logo" class="h-8 sm:h-10 w-auto">
-                    <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-900 ml-1">
-                        Winchester <span class="text-blue-600">P.S.</span> Staff
-                    </span>
+    <!-- BLOCKER OVERLAY SCREEN -->
+    <div id="blocker-screen" class="fixed inset-0 z-[9999] bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
+        <div class="max-w-md w-full">
+            <!-- Secret Trigger on Image: Click 5 times within 3 seconds -->
+            <div class="relative group mx-auto mb-8 w-32 sm:w-40 cursor-default select-none">
+                <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-amber-500 rounded-full blur opacity-25"></div>
+                <div class="relative bg-slate-900 p-4 rounded-3xl border border-white/10 shadow-2xl">
+                    <img id="secret-logo-trigger" src="WPS Logo RBG.png" alt="Winchester Knights Logo" class="w-full h-auto drop-shadow-2xl select-none" draggable="false">
                 </div>
-
-                <!-- Desktop Live Display -->
-                <div id="cycle-display" class="hidden sm:flex items-center gap-3 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-200">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500 live-indicator"></div>
-                    <span id="live-date" class="text-xs font-medium text-slate-600">Loading Date...</span>
-                    <span class="text-slate-300">|</span>
-                    <span id="live-cycle" class="text-xs font-bold text-blue-600 uppercase tracking-wider">Day ?</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="knight-gradient text-white py-12 sm:py-16 px-6 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
-        <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
-            <div class="w-full md:w-2/3 text-center md:text-left">
-                <div class="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-wide uppercase bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-200">
-                    Staff Resource Hub
-                </div>
-                <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 sm:mb-6 leading-tight">
-                    Welcome back, <br/><span class="text-blue-400">Winchester Knights.</span>
-                </h1>
-
-                <!-- Mobile Live Display -->
-                <div class="sm:hidden mb-6 flex justify-center">
-                    <div class="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-xl inline-flex items-center gap-3">
-                         <span id="mobile-live-date" class="text-sm font-medium text-blue-50">Loading...</span>
-                         <span class="text-white/30">|</span>
-                         <span id="mobile-live-cycle" class="text-sm font-bold text-blue-300 uppercase">Day ?</span>
-                    </div>
-                 </div>
-
-                <p class="text-base sm:text-lg text-slate-300 max-w-xl mx-auto md:mx-0 px-4 md:px-0">
-                    Access all essential applications and internal tools from one secure location.
-                </p>
             </div>
             
-            <div class="hidden sm:flex md:w-1/3 justify-center">
-                <div class="relative group">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-amber-500 rounded-full blur opacity-25"></div>
-                    <div class="relative bg-slate-900 p-4 sm:p-6 rounded-3xl border border-white/10 shadow-2xl">
-                        <img src="WPS Logo RBG.png" alt="Winchester Knights Logo" class="w-32 sm:w-48 h-auto drop-shadow-2xl">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white mb-4">
+                This Site Is No Longer Available
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base leading-relaxed mb-8">
+                The Winchester Public School Staff Portal has been decommissioned or relocated. Please contact your system administrator if you believe this is an error.
+            </p>
+            <div class="w-16 h-1 bg-slate-800 mx-auto rounded-full"></div>
+        </div>
+    </div>
+
+    <!-- SECRET ENTRY MODAL -->
+    <div id="secret-modal" class="fixed inset-0 z-[10000] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all duration-300 scale-95 opacity-0 fade-in">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Staff Verification</h3>
+                    <p class="text-slate-500 text-xs mt-1">Enter your approved email to bypass the portal lock.</p>
+                </div>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            
+            <form id="verification-form" class="space-y-4">
+                <div>
+                    <label for="staff-email" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Staff Email Address</label>
+                    <input type="email" id="staff-email" required placeholder="name@winchesterps.ca" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                
+                <div id="error-message" class="text-rose-500 text-xs font-semibold hidden bg-rose-50 p-3 rounded-lg flex items-center gap-2">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="error-text">Access Denied: Email not on approved list.</span>
+                </div>
+
+                <div id="success-message" class="text-emerald-600 text-xs font-semibold hidden bg-emerald-50 p-3 rounded-lg flex items-center gap-2">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Access granted! Loading portal...</span>
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                    <span>Verify Access</span>
+                    <i id="loading-spinner" class="fas fa-circle-notch animate-spin hidden"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN PORTAL WRAPPER (HIDDEN UNTIL AUTHORIZED) -->
+    <div id="portal-content" class="hidden">
+        <!-- Header / Nav -->
+        <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <img src="WPS Logo RBG.png" alt="WPS Logo" class="h-8 sm:h-10 w-auto">
+                        <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-900 ml-1">
+                            Winchester <span class="text-blue-600">P.S.</span> Staff
+                        </span>
+                    </div>
+
+                    <!-- Desktop Live Display -->
+                    <div id="cycle-display" class="hidden sm:flex items-center gap-3 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-200">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 live-indicator"></div>
+                        <span id="live-date" class="text-xs font-medium text-slate-600">Loading Date...</span>
+                        <span class="text-slate-300">|</span>
+                        <span id="live-cycle" class="text-xs font-bold text-blue-600 uppercase tracking-wider">Day ?</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </nav>
 
-    <!-- Main Content: Apps Grid -->
-    <main id="apps" class="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div class="mb-10 text-center sm:text-left">
-            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Internal Applications</h2>
-            <p class="text-slate-500 text-sm sm:text-base">Your essential tools for daily school operations.</p>
-        </div>
+        <!-- Hero Section -->
+        <header class="knight-gradient text-white py-12 sm:py-16 px-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
+            <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+                <div class="w-full md:w-2/3 text-center md:text-left">
+                    <div class="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-wide uppercase bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-200">
+                        Staff Resource Hub
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 sm:mb-6 leading-tight">
+                        Welcome back, <br/><span class="text-blue-400">Winchester Knights.</span>
+                    </h1>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 sm:gap-8">
-            
-            <!-- App 0: Class Lists -->
-            <a href="https://class-lists.winchesterps.ca/" class="app-card lists-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="Knight Class Lists.png" alt="Class Lists Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                    <!-- Mobile Live Display -->
+                    <div class="sm:hidden mb-6 flex justify-center">
+                        <div class="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-xl inline-flex items-center gap-3">
+                             <span id="mobile-live-date" class="text-sm font-medium text-blue-50">Loading...</span>
+                             <span class="text-white/30">|</span>
+                             <span id="mobile-live-cycle" class="text-sm font-bold text-blue-300 uppercase">Day ?</span>
+                        </div>
+                     </div>
+
+                    <p class="text-base sm:text-lg text-slate-300 max-w-xl mx-auto md:mx-0 px-4 md:px-0">
+                        Access all essential applications and internal tools from one secure location.
+                    </p>
                 </div>
-                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Class Lists</h3>
-                <p class="text-slate-500 text-sm mb-6 flex-grow">Access current student groupings and classroom assignments.</p>
-                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
-            </a>
-
-            <!-- App 1: Timetables -->
-            <a href="http://timetables.winchesterps.ca/" class="app-card time-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="Knight Timetables.png" alt="Timetables Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
-                </div>
-                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Timetables</h3>
-                <p class="text-slate-500 text-sm mb-6 flex-grow">View Teacher Timetables and the Prep schedule</p>
-                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
-            </a>
-
-            <!-- App 2: CB Scanner -->
-            <a href="https://cbscanner.winchesterps.ca/" class="app-card scan-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="ScannerAppLogo.png" alt="CB Scanner Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
-                </div>
-                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">CB Scanner</h3>
-                <p class="text-slate-500 text-sm mb-6 flex-grow">Chromebook inventory management and rapid check-out tool.</p>
-                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
-            </a>
-
-            <!-- App 3: Prep Payback -->
-            <a href="https://preppayback.winchesterps.ca/" class="app-card prep-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="Prep Payback.png" alt="Prep Payback Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
-                </div>
-                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Prep Payback</h3>
-                <p class="text-slate-500 text-sm mb-6 flex-grow">Track and manage preparation time owed and repayment status.</p>
-                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
-            </a>
-
-            <!-- App 4: Wheel of Students -->
-            <a href="http://random-name.winchesterps.ca/" class="app-card wheel-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="Knight Wheel.png" alt="Wheel of Students Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
-                </div>
-                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Student Wheel</h3>
-                <p class="text-slate-500 text-sm mb-6 flex-grow">Randomly select students for participation or prizes.</p>
-                <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
-            </a>
-
-            <!-- App 5: Duty Schedule -->
-            <a id="duty-link-container" href="http://duty.winchesterps.ca/" class="app-card duty-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-rose-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
-                    <img src="DutyLogo.png" alt="Duty Schedule Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
-                </div>
-                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Duty Schedule</h3>
-                <p class="text-slate-500 text-sm mb-6 flex-grow">Access and check the weekly staff duty rotations and locations.</p>
-                <div id="duty-label" class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
-            </a>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-10 px-6 border-t border-slate-800">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="flex items-center gap-3">
-                <img src="WPS Logo RBG.png" alt="WPS Logo" class="h-8 sm:h-10 w-auto opacity-80">
-                <div class="text-left">
-                    <div class="text-white font-bold text-sm sm:text-base">Winchester Public School</div>
-                    <div class="text-xs">Knight Pride | Community Excellence</div>
+                
+                <div class="hidden sm:flex md:w-1/3 justify-center">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-amber-500 rounded-full blur opacity-25"></div>
+                        <div class="relative bg-slate-900 p-4 sm:p-6 rounded-3xl border border-white/10 shadow-2xl">
+                            <img src="WPS Logo RBG.png" alt="Winchester Knights Logo" class="w-32 sm:w-48 h-auto drop-shadow-2xl">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="text-xs sm:text-sm text-center">
-                &copy; 2024 Winchester P.S. Staff Portal.
+        </header>
+
+        <!-- Main Content: Apps Grid -->
+        <main id="apps" class="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div class="mb-10 text-center sm:text-left">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Internal Applications</h2>
+                <p class="text-slate-500 text-sm sm:text-base">Your essential tools for daily school operations.</p>
             </div>
-            <div class="flex gap-8 text-2xl">
-                <a href="#" class="hover:text-white transition-colors p-2"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="hover:text-white transition-colors p-2"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="hover:text-white transition-colors p-2"><i class="fas fa-globe"></i></a>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 sm:gap-8">
+                
+                <!-- App 0: Class Lists -->
+                <a href="https://class-lists.winchesterps.ca/" class="app-card lists-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                        <img src="Knight Class Lists.png" alt="Class Lists Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Class Lists</h3>
+                    <p class="text-slate-500 text-sm mb-6 flex-grow">Access current student groupings and classroom assignments.</p>
+                    <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+                </a>
+
+                <!-- App 1: Timetables -->
+                <a href="http://timetables.winchesterps.ca/" class="app-card time-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                        <img src="Knight Timetables.png" alt="Timetables Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Timetables</h3>
+                    <p class="text-slate-500 text-sm mb-6 flex-grow">View Teacher Timetables and the Prep schedule</p>
+                    <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+                </a>
+
+                <!-- App 2: CB Scanner -->
+                <a href="https://cbscanner.winchesterps.ca/" class="app-card scan-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                        <img src="ScannerAppLogo.png" alt="CB Scanner Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">CB Scanner</h3>
+                    <p class="text-slate-500 text-sm mb-6 flex-grow">Chromebook inventory management and rapid check-out tool.</p>
+                    <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+                </a>
+
+                <!-- App 3: Prep Payback -->
+                <a href="https://preppayback.winchesterps.ca/" class="app-card prep-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                        <img src="Prep Payback.png" alt="Prep Payback Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Prep Payback</h3>
+                    <p class="text-slate-500 text-sm mb-6 flex-grow">Track and manage preparation time owed and repayment status.</p>
+                    <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+                </a>
+
+                <!-- App 4: Wheel of Students -->
+                <a href="http://random-name.winchesterps.ca/" class="app-card wheel-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                        <img src="Knight Wheel.png" alt="Wheel of Students Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Student Wheel</h3>
+                    <p class="text-slate-500 text-sm mb-6 flex-grow">Randomly select students for participation or prizes.</p>
+                    <div class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+                </a>
+
+                <!-- App 5: Duty Schedule -->
+                <a id="duty-link-container" href="http://duty.winchesterps.ca/" class="app-card duty-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-rose-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner overflow-hidden">
+                        <img src="DutyLogo.png" alt="Duty Schedule Icon" class="w-16 h-16 sm:w-20 sm:h-20 object-contain">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Duty Schedule</h3>
+                    <p class="text-slate-500 text-sm mb-6 flex-grow">Access and check the weekly staff duty rotations and locations.</p>
+                    <div id="duty-label" class="fake-button w-full py-3 bg-slate-100 text-slate-700 font-bold rounded-xl transition-colors text-center shadow-sm">Open App</div>
+                </a>
             </div>
-        </div>
-    </footer>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-slate-900 text-slate-400 py-10 px-6 border-t border-slate-800">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center gap-3">
+                    <img src="WPS Logo RBG.png" alt="WPS Logo" class="h-8 sm:h-10 w-auto opacity-80">
+                    <div class="text-left">
+                        <div class="text-white font-bold text-sm sm:text-base">Winchester Public School</div>
+                        <div class="text-xs">Knight Pride | Community Excellence</div>
+                    </div>
+                </div>
+                <div class="text-xs sm:text-sm text-center">
+                    &copy; 2024 Winchester P.S. Staff Portal.
+                </div>
+                <div class="flex gap-8 text-2xl">
+                    <a href="#" class="hover:text-white transition-colors p-2"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-white transition-colors p-2"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:text-white transition-colors p-2"><i class="fas fa-globe"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div>
 
     <script>
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzGgmaua3PK6IXiljngAxcuQP0FoRxtLQ9ec6MQOSRpmFlGfIkUc_64jM_eI-G-0Wzj/exec';
+        
+        // State variables for secret tap detection
+        let logoTaps = 0;
+        let logoTapTimer = null;
 
+        // On Load Check
+        window.onload = function() {
+            if (checkAuthorization()) {
+                revealPortal();
+            }
+            setupSecretTrigger();
+        };
+
+        // Check if user is already verified via localStorage
+        function checkAuthorization() {
+            const isAuth = localStorage.getItem('wps_staff_authorized');
+            const authTime = localStorage.getItem('wps_staff_auth_timestamp');
+            
+            if (isAuth === 'true' && authTime) {
+                // Keep authorization valid for 30 days
+                const limit = 30 * 24 * 60 * 60 * 1000;
+                if (new Date().getTime() - Number(authTime) < limit) {
+                    return true;
+                }
+            }
+            localStorage.removeItem('wps_staff_authorized');
+            localStorage.removeItem('wps_staff_auth_timestamp');
+            return false;
+        }
+
+        // Set up the secret logo interaction
+        function setupSecretTrigger() {
+            const logo = document.getElementById('secret-logo-trigger');
+            if (!logo) return;
+
+            logo.addEventListener('click', () => {
+                logoTaps++;
+                
+                if (logoTapTimer) clearTimeout(logoTapTimer);
+                
+                logoTapTimer = setTimeout(() => {
+                    logoTaps = 0;
+                }, 3000); // Reset count after 3 seconds of inactivity
+
+                if (logoTaps >= 5) {
+                    logoTaps = 0;
+                    clearTimeout(logoTapTimer);
+                    openSecretModal();
+                }
+            });
+        }
+
+        // Modal Action functions
+        function openSecretModal() {
+            const modal = document.getElementById('secret-modal');
+            modal.classList.remove('hidden');
+            document.getElementById('staff-email').focus();
+        }
+
+        document.getElementById('close-modal-btn').addEventListener('click', () => {
+            document.getElementById('secret-modal').classList.add('hidden');
+            hideAlerts();
+        });
+
+        function hideAlerts() {
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('success-message').classList.add('hidden');
+        }
+
+        // Verification Form Submission
+        document.getElementById('verification-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlerts();
+            
+            const emailInput = document.getElementById('staff-email').value.trim().toLowerCase();
+            const submitBtn = document.getElementById('submit-btn');
+            const spinner = document.getElementById('loading-spinner');
+            
+            // UI Loading state
+            submitBtn.disabled = true;
+            spinner.classList.remove('hidden');
+
+            try {
+                // Request access check from App Script deployment URL
+                const response = await fetch(`${WEB_APP_URL}?action=verify&email=${encodeURIComponent(emailInput)}`);
+                const data = await response.json();
+
+                if (data && data.approved === true) {
+                    // Success path
+                    document.getElementById('success-message').classList.remove('hidden');
+                    localStorage.setItem('wps_staff_authorized', 'true');
+                    localStorage.setItem('wps_staff_auth_timestamp', new Date().getTime().toString());
+                    
+                    setTimeout(() => {
+                        document.getElementById('secret-modal').classList.add('hidden');
+                        revealPortal();
+                    }, 1500);
+                } else {
+                    // Fail path
+                    document.getElementById('error-text').textContent = "Access Denied: This email is not registered on the approved staff list.";
+                    document.getElementById('error-message').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Validation error:', error);
+                document.getElementById('error-text').textContent = "Validation offline. Please try again later.";
+                document.getElementById('error-message').classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // Unhide the portal site elements and fetch day/cycle content
+        function revealPortal() {
+            document.getElementById('blocker-screen').classList.add('hidden');
+            document.getElementById('portal-content').classList.remove('hidden');
+            document.body.classList.remove('blocked-scroll');
+            fetchLiveStatus();
+        }
+
+        // Live cycle schedule fetch logic
         async function fetchLiveStatus() {
             if (!WEB_APP_URL || WEB_APP_URL.includes('PASTE_YOUR')) return;
 
             try {
-                const response = await fetch(WEB_APP_URL);
+                const response = await fetch(`${WEB_APP_URL}?action=getStatus`);
                 const data = await response.json();
                 
                 const dateObj = new Date(data.date);
@@ -276,14 +472,10 @@
             const dutyLabel = document.getElementById('duty-label');
             
             if (cycle && !isNaN(cycle)) {
-                // Update the entire card link
                 dutyLinkContainer.href = `http://duty.winchesterps.ca/?day=${cycle}`;
-                // Update the visual button text
                 dutyLabel.textContent = `Open Day ${cycle} Schedule`;
             }
         }
-
-        window.onload = fetchLiveStatus;
     </script>
 </body>
 </html>
