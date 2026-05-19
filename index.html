@@ -132,7 +132,7 @@
             <div class="flex justify-between items-start mb-6">
                 <div>
                     <h3 class="text-xl font-bold text-slate-900">Staff Verification</h3>
-                    <p class="text-slate-500 text-xs mt-1">Enter your approved email to bypass the portal lock.</p>
+                    <p class="text-slate-500 text-xs mt-1">Enter your credentials to bypass the portal lock.</p>
                 </div>
                 <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 p-1">
                     <i class="fas fa-times text-lg"></i>
@@ -144,10 +144,15 @@
                     <label for="staff-email" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Staff Email Address</label>
                     <input type="email" id="staff-email" required placeholder="name@winchesterps.ca" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                 </div>
+
+                <div>
+                    <label for="staff-password" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                    <input type="password" id="staff-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
                 
                 <div id="error-message" class="text-rose-500 text-xs font-semibold hidden bg-rose-50 p-3 rounded-lg flex items-center gap-2">
                     <i class="fas fa-exclamation-circle"></i>
-                    <span id="error-text">Access Denied: Email not on approved list.</span>
+                    <span id="error-text">Access Denied: Incorrect email or password.</span>
                 </div>
 
                 <div id="success-message" class="text-emerald-600 text-xs font-semibold hidden bg-emerald-50 p-3 rounded-lg flex items-center gap-2">
@@ -394,6 +399,7 @@
             hideAlerts();
             
             const emailInput = document.getElementById('staff-email').value.trim().toLowerCase();
+            const passwordInput = document.getElementById('staff-password').value; // Keep original casing for password security
             const submitBtn = document.getElementById('submit-btn');
             const spinner = document.getElementById('loading-spinner');
             
@@ -402,8 +408,8 @@
             spinner.classList.remove('hidden');
 
             try {
-                // Request access check from App Script deployment URL
-                const response = await fetch(`${WEB_APP_URL}?action=verify&email=${encodeURIComponent(emailInput)}`);
+                // Request access check from App Script deployment URL, passing both fields
+                const response = await fetch(`${WEB_APP_URL}?action=verify&email=${encodeURIComponent(emailInput)}&password=${encodeURIComponent(passwordInput)}`);
                 const data = await response.json();
 
                 if (data && data.approved === true) {
@@ -412,13 +418,16 @@
                     localStorage.setItem('wps_staff_authorized', 'true');
                     localStorage.setItem('wps_staff_auth_timestamp', new Date().getTime().toString());
                     
+                    // Clear the password input for security
+                    document.getElementById('staff-password').value = "";
+                    
                     setTimeout(() => {
                         document.getElementById('secret-modal').classList.add('hidden');
                         revealPortal();
                     }, 1500);
                 } else {
                     // Fail path
-                    document.getElementById('error-text').textContent = "Access Denied: This email is not registered on the approved staff list.";
+                    document.getElementById('error-text').textContent = "Access Denied: Incorrect email or password.";
                     document.getElementById('error-message').classList.remove('hidden');
                 }
             } catch (error) {
