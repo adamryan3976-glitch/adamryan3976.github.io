@@ -419,20 +419,49 @@
             }
         }
 
-        // Check if user is already verified via localStorage
+        // Helper to check if a JWT is expired client-side
+        function isTokenExpired(token) {
+            try {
+                if (!token) return true;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const payload = JSON.parse(jsonPayload);
+                return payload.exp < (Date.now() / 1000) - 30; // Expired if within 30 seconds of expiry
+            } catch (e) {
+                return true; // Treat broken tokens as expired
+            }
+        }
+
+        // Extract shared domain token cookie securely
+        function getSharedCookie(name) {
+            const val = `; ${document.cookie}`;
+            const parts = val.split(`; ${name}=`);
+            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+            return null;
+        }
+
+        // Check if user is already verified via localStorage and that Google token is STILL active
         function checkAuthorization() {
             const isAuth = localStorage.getItem('wps_staff_authorized');
             const authTime = localStorage.getItem('wps_staff_auth_timestamp');
+            const token = getSharedCookie('wps_auth_token');
             
-            if (isAuth === 'true' && authTime) {
+            // Critical Loop Guard: We must possess a non-expired Google OAuth token to load the portal
+            if (isAuth === 'true' && authTime && token && !isTokenExpired(token)) {
                 // Keep authorization valid for 30 days
                 const limit = 30 * 24 * 60 * 60 * 1000;
                 if (new Date().getTime() - Number(authTime) < limit) {
                     return true;
                 }
             }
+            
+            // Auto-cleanup desynced expired sessions
             localStorage.removeItem('wps_staff_authorized');
             localStorage.removeItem('wps_staff_auth_timestamp');
+            document.cookie = "wps_auth_token=; domain=.winchesterps.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure; SameSite=Lax";
             return false;
         }
 
@@ -462,7 +491,6 @@
         function openSecretModal() {
             const modal = document.getElementById('secret-modal');
             modal.classList.remove('hidden');
-            // Re-render button if openSecretModal is called and it's not rendered yet
             initGoogleAuth();
         }
 
@@ -506,7 +534,6 @@
             }
         }
 
-        // Update UI configuration
         function updateUI(dateStr, cycle) {
             document.getElementById('live-date').textContent = dateStr;
             document.getElementById('live-cycle').textContent = `Day ${cycle}`;
@@ -528,7 +555,7 @@
             localStorage.removeItem('wps_staff_authorized');
             localStorage.removeItem('wps_staff_auth_timestamp');
             
-            // --- CLEAR SUBDOMAIN SHARED SECURE COOKIE ---
+            // CLEAR SUBDOMAIN SHARED SECURE COOKIE
             document.cookie = "wps_auth_token=; domain=.winchesterps.ca; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure; SameSite=Lax";
             
             if (typeof google !== 'undefined') {
